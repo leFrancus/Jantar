@@ -1,6 +1,7 @@
 # 🏀 Jantar - browse safely
 ![Active](https://img.shields.io/badge/Active-Yes-green)
 ![Language](https://img.shields.io/badge/Python-3.15.1+-blue?logo=python)
+[![Library](https://img.shields.io/badge/PySide-PySide6-green?logo=python)](https://pyside.org/)
 ![License](https://img.shields.io/github/license/leFrancus/Jantar)
 ![Os support](https://img.shields.io/badge/Windows_support-Windows_11_(x64)-blue)
 ![Os support](https://img.shields.io/badge/Debian_support-Planned-yellow?logo=debian)
