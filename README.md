@@ -10,7 +10,7 @@
 
 ## Be safe - stay calm
 
-**Jantar** is not just a browser, but a place where we try to make your internet surf safer.
+**Jantar** is not just a desktop browser, but a place where we try to make your internet surf safer.
 
 ### Key Features
 - Redefining browsers' philosophy
