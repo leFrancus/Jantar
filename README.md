@@ -13,7 +13,7 @@
 **Jantar** is not just a browser, but a place where we try to make your internet surf safer.
 
 ### Key Features
-- Redefining Browsers' philosophy
+- Redefining browsers' philosophy
 - Modern libraries
 - Safe features
 - Minimalistic and user-friendly UI
