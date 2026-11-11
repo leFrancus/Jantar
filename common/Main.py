@@ -1,10 +1,11 @@
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QWidget
 from pathlib import Path
 import time
 import sys
 import os
 
 _SearchEnginesDatabase = 'data/SearchEngines.sqlite'
+_MainPath = Path(__file__).resolve()
 
 
 class JManager:
@@ -19,7 +20,7 @@ class JManager:
     def IgniteEngine(self):
         try:
 
-            from bunch.modules import ProfileSelector, Browser, ProfileMini  # Imports working check
+            # from bunch.modules import ProfileSelector, Browser, ProfileMini  # Imports working check
 
             DatabaseLength = str(hex(_SearchEnginesDatabase.__len__()))[2:]
             self.FactHex += DatabaseLength
@@ -61,6 +62,12 @@ class JManager:
         except Exception:
             print('Unable to restore app data')
 
+    def StartBrowser(self, IsPrivate: bool, SenderWidget: QWidget, WebProfileId: int):
+        if IsPrivate:
+            SenderWidget.close()
+            self.Window = Browser.Object(WebProfileId)
+            self.Window.showMaximized()
+
 if __name__ == '__main__':
     AppManager = JManager()
     AppManager.RestoreAppData()
@@ -71,7 +78,7 @@ if __name__ == '__main__':
 
         Application = QApplication(sys.argv)
         
-        Window = ProfileSelector.Object()
+        Window = ProfileSelector.Object(AppManager)
         Window.show()
         sys.exit(Application.exec())
     else:
