@@ -7,6 +7,9 @@
 ![Os support](https://img.shields.io/badge/Debian_support-Planned-yellow?logo=debian)
 ![Os support](https://img.shields.io/badge/MacOS_support-No-red?logo=apple)
 ![Os support](https://img.shields.io/badge/Status-Early_development-orange)
+![Last release](https://img.shields.io/badge/Last_release-None-red)
+
+
 
 ## Be safe - stay calm
 
