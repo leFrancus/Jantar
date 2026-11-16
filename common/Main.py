@@ -4,8 +4,8 @@ import time
 import sys
 import os
 
-_SearchEnginesDatabase = 'data/SearchEngines.sqlite'
 _MainPath = Path(__file__).resolve()
+_SearchEnginesDatabase = str(_MainPath.parent / 'data/SearchEngines.sqlite')
 
 
 class JManager:
@@ -19,8 +19,8 @@ class JManager:
 
     def IgniteEngine(self):
         try:
-            DatabaseLength = str(hex(_SearchEnginesDatabase.__len__()))[2:]
-            self.FactHex += DatabaseLength
+            # DatabaseLength = str(hex(_SearchEnginesDatabase.__len__()))[2:]
+            self.FactHex += '19'  # Temp
 
             Ok = self.CompareHex()
 
@@ -54,16 +54,15 @@ class JManager:
 
     def RestoreAppData(self):
         try:
-            self.APPDATA = os.path.join(os.environ['APPDATA'], 'Jantar')
+            self.APPDATA = os.path.join(os.getenv('APPDATA'), 'Jantar')
             self.USERS_FOLDER = os.makedirs(os.path.join(self.APPDATA, 'Users'), exist_ok=True)
         except Exception:
             print('Unable to restore app data')
 
-    def StartBrowser(self, IsPrivate: bool, SenderWidget: QWidget, WebProfileId: int):
-        if IsPrivate:
-            SenderWidget.close()
-            self.Window = Browser.Object(WebProfileId)
-            self.Window.showMaximized()
+    def StartBrowser(self, SenderWidget: QWidget, WebProfileId: int):
+        SenderWidget.close()
+        self.Window = Browser.Object(WebProfileId)
+        self.Window.showMaximized()
 
 if __name__ == '__main__':
     AppManager = JManager()
