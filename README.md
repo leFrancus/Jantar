@@ -4,8 +4,6 @@
 [![Library](https://img.shields.io/badge/PySide-PySide6-green?logo=python)](https://pyside.org/)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Os support](https://img.shields.io/badge/Windows_support-Windows_11_(x64)-blue)
-![Os support](https://img.shields.io/badge/Debian_support-Planned-yellow?logo=debian)
-![Os support](https://img.shields.io/badge/MacOS_support-No-red?logo=apple)
 ![Os support](https://img.shields.io/badge/Status-Early_development-orange)
 ![Last release](https://img.shields.io/badge/Last_release-None-red)
 
