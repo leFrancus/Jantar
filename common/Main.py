@@ -40,7 +40,7 @@ class JManager:
 
     def StartBrowser(self, SenderWidget: QWidget, WebProfileId: int):
         SenderWidget.close()
-        self.Window = Browser.Object(WebProfileId)
+        self.Window = Browser.Object(WebProfileId, self)
         self.Window.showMaximized()
 
 if __name__ == '__main__':

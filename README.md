@@ -1,11 +1,11 @@
-# 🏀 Jantar - browse safely
-![Active](https://img.shields.io/badge/Active-Yes-green)
+# 🏀🌎 Jantar - browse safely
+![Support](https://img.shields.io/badge/Active-No-gray)
 ![Language](https://img.shields.io/badge/Python-3.15.1+-blue?logo=python)
 [![Library](https://img.shields.io/badge/PySide-PySide6-green?logo=python)](https://pyside.org/)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Os support](https://img.shields.io/badge/Windows_support-Windows_11_(x64)-blue)
-![Os support](https://img.shields.io/badge/Status-Early_development-orange)
-![Last release](https://img.shields.io/badge/Last_release-None-red)
+![Status](https://img.shields.io/badge/Status-Development's_stopped-gray)
+![Last release](https://img.shields.io/badge/Last_release-26.0_(Night)-black)
 
 
 
@@ -15,13 +15,17 @@
 
 ### Key Features
 - Redefining browsers' philosophy
-- Modern libraries
-- Safe features
 - Minimalistic and user-friendly UI
 
 ### Install
-There is **no installer or install instructions currently**, but they're coming soon.
+1. Download any release of Jantar
+2. Unpack the downloaded archive.
+3. Now, you can use the browser! Just click "Jantar.cmd"! 🎉
 
+### Uninstall
+1. Click "uninstall.cmd" in the program directory.
+
+## That's it!
 [![User](https://img.shields.io/badge/Author-leFrancus-blue?logo=github)](https://github.com/leFrancus)
 
 # WARNING
