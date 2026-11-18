@@ -10,8 +10,6 @@ _SearchEnginesDatabase = str(_MainPath.parent / 'data/SearchEngines.sqlite')
 
 class JManager:
     def __init__(self):
-        self.ControlHex = '0x19'
-        self.FactHex = '0x'
         try:
             self.PATH = Path(__file__).resolve().parent
         except Exception:
@@ -19,10 +17,7 @@ class JManager:
 
     def IgniteEngine(self):
         try:
-            # DatabaseLength = str(hex(_SearchEnginesDatabase.__len__()))[2:]
-            self.FactHex += '19'  # Temp
-
-            Ok = self.CompareHex()
+            Ok = True
 
             if Ok:
                 time.sleep(2)
@@ -35,22 +30,6 @@ class JManager:
         except Exception:
             print('Unable to load: error during ignition')
             return False
-
-    def CompareHex(self):
-        try:
-            int(self.ControlHex, 16)
-            int(self.FactHex, 16)
-            if self.FactHex != self.ControlHex:
-                raise ValueError
-        except ValueError:
-            print('Files are broken or edited incorrectly (ControlHex != FactHex)')
-            return False
-        except Exception:
-            print('Unable to compare: error during hex-comparation')
-            return False
-        else:
-            print('Successful hex-comparation')
-            return True
 
     def RestoreAppData(self):
         try:
