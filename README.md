@@ -25,3 +25,6 @@
 There is **no installer or install instructions currently**, but they're coming soon.
 
 [![User](https://img.shields.io/badge/Author-leFrancus-blue?logo=github)](https://github.com/leFrancus)
+
+# WARNING
+This is the **educational project**, not a complete browser! Download and use it only *if you sure!*
