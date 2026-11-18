@@ -9,7 +9,7 @@
 
 
 
-## Be safe - stay calm
+## Vibe-surfing net!
 
 **Jantar** is not just a desktop browser, but a place where we try to make your internet surf safer.
 
