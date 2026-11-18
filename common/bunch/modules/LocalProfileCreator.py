@@ -9,7 +9,7 @@ from . import ProfileSelector
 import argon2
 
 _WIDGET = None
-_LocalUsersDatabase = Path(__file__).resolve().parent.parent.parent / 'data/LocalUsers-Safe.sqlite'  # Temp -Safe file
+_LocalUsersDatabase = Path(__file__).resolve().parent.parent.parent / 'data/LocalUsers.db'
 
 
 class Object(QWidget):
@@ -174,32 +174,15 @@ class Object(QWidget):
         with sql.connect(os.path.join(UserPath, 'Data.db')) as Database:
             Cursor = Database.cursor()
 
-            RequestCreate = """CREATE TABLE IF NOT EXISTS safetySettings (
+            RequestCreate = """CREATE TABLE IF NOT EXISTS userSettings (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT,
                 value TEXT)"""
-            Request = "INSERT INTO safetySettings (name, value) VALUES (?, ?)"
-            Cursor.execute(RequestCreate)
-            Cursor.execute(Request, ('HttpsOnly', 1))
-            Cursor.execute(Request, ('NecessaryCookiesOnly', 1))
-            Cursor.execute(Request, ('CertificatePolicy', 1))
-            Cursor.execute(Request, ('BlockExternalRequests', 1))
 
-            RequestCreate = RequestCreate.replace('safetySettings', 'userSettings')
             Request = "INSERT INTO userSettings (name, value) VALUES (?, ?)"
             Cursor.execute(RequestCreate)
             Cursor.execute(Request, ('Homepage', ''))
             Cursor.execute(Request, ('SearchEngineByDefault', 1))
-            Cursor.execute(Request, ('CacheFolder', CachePath))
-            Cursor.execute(Request, ('PersistentFolder', PersistentPath))
-
-            RequestCreate = """CREATE TABLE IF NOT EXISTS downloadsReg (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                path TEXT,
-                size TEXT,
-                datetime TEXT)"""
-            Cursor.execute(RequestCreate)
         Database.close()
 
         print('New local profile has been created')

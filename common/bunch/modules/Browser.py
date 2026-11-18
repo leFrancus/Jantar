@@ -8,22 +8,23 @@ import sqlite3 as sql
 from . import ProfileMini
 import os
 
-_LocalUsersDatabase = Path(__file__).resolve().parent.parent.parent / 'data/LocalUsers-Safe.sqlite'  # Temp -Safe file
+_LocalUsersDatabase = Path(__file__).resolve().parent.parent.parent / 'data/LocalUsers.db'
+_SearchEnginesDatabase = Path(__file__).resolve().parent.parent.parent / 'data/SearchEngines.sqlite'
 
 
 class Object(QWidget):
-    def __init__(self, WebProfileId: int):
+    def __init__(self, WebProfileId: int, AppManager):
         super().__init__()
 
         # PROFILE
         self.WebProfileId = WebProfileId
+        self.AppManager = AppManager
         if self.WebProfileId != -1:
             with sql.connect(_LocalUsersDatabase) as Database:
                 Cursor = Database.cursor()
                 Request = "SELECT name, userFolder FROM localUsers WHERE id = ?"
                 WebProfileName, self.WebProfilePath = Cursor.execute(Request, (self.WebProfileId,)).fetchone()
             self.WebProfile = QWebEngineProfile(WebProfileName, self)
-            self.UpdateProfileSettings()
         # END
 
         self.WebViewRegister = []
@@ -66,15 +67,7 @@ class Object(QWidget):
         self.ActionBar.layout().setSpacing(0)
         self.WindowLayout.addWidget(self.ActionBar)
 
-        self.CommandButton = QToolButton()
-        self.CommandButton.setCursor(Qt.CursorShape.PointingHandCursor)
         self.ActionButtonStyle = self.UnifiedStyleSheet + ' border-style: solid none none none; border-color: #d4d4d4; border-width: 2px; font-size: 12px;'
-        self.CommandButton.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        self.CommandButton.setStyleSheet(self.ActionButtonStyle)
-        self.CommandButton.setFixedHeight(self.ActionBar.height() - 2)
-        self.CommandButton.setFixedWidth(self.CommandButton.height() - 6)
-        self.CommandButton.setText('⌘')
-        self.ActionBar.layout().addWidget(self.CommandButton)
 
         self.UndoButton = QToolButton()
         self.UndoButton.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -174,7 +167,7 @@ class Object(QWidget):
         self.AccountMenuButton.setStyleSheet(self.AccountStyle)
         self.AccountMenuButton.setFixedHeight(self.ActionBar.height() - 2)
         self.AccountMenuButton.setFixedWidth(self.AccountMenuButton.height())
-        self.AccountMenuButton.clicked.connect(lambda: ProfileMini.ShowObject(self.WebProfileId))
+        self.AccountMenuButton.clicked.connect(lambda: ProfileMini.ShowObject(self.WebProfileId, self.AppManager))
         if self.WebProfileId == -1:
             Icon = QIcon(str(Path(__file__).resolve().parent.parent / 'images/PrivateUser.png'))
         else:
@@ -189,18 +182,24 @@ class Object(QWidget):
         self.AccountMenuButton.setIcon(Icon)
         self.ActionBar.layout().addWidget(self.AccountMenuButton)
 
-        self.UserDatabase = os.path.join(self.UserPath, 'Data.db')
-        with sql.connect(self.UserDatabase) as Database:
-            Cursor = Database.cursor()
-            Request = "SELECT value FROM userSettings WHERE name = 'SearchEngineByDefault'"
-            SearchEngineId = int(Cursor.execute(Request).fetchone()[0])
-        Database.close()
-        _SearchEnginesDatabase = Path(__file__).resolve().parent.parent.parent / 'data/SearchEngines.sqlite'
-        with sql.connect(_SearchEnginesDatabase) as Database:
-            Cursor = Database.cursor()
-            Request = "SELECT baseLink, requestLink FROM searchEngines WHERE id = ?"
-            self.EngineLink, self.RequestLink = Cursor.execute(Request, (SearchEngineId,)).fetchone()
-        Database.close()
+        if self.WebProfileId != -1:
+            self.UserDatabase = os.path.join(self.UserPath, 'Data.db')
+            with sql.connect(self.UserDatabase) as Database:
+                Cursor = Database.cursor()
+                Request = "SELECT value FROM userSettings WHERE name = 'SearchEngineByDefault'"
+                SearchEngineId = int(Cursor.execute(Request).fetchone()[0])
+            Database.close()
+            with sql.connect(_SearchEnginesDatabase) as Database:
+                Cursor = Database.cursor()
+                Request = "SELECT baseLink, requestLink FROM searchEngines WHERE id = ?"
+                self.EngineLink, self.RequestLink = Cursor.execute(Request, (SearchEngineId,)).fetchone()
+            Database.close()
+        else:
+            with sql.connect(_SearchEnginesDatabase) as Database:
+                Cursor = Database.cursor()
+                Request = "SELECT baseLink, requestLink FROM searchEngines WHERE id = ?"
+                self.EngineLink, self.RequestLink = Cursor.execute(Request, (1,)).fetchone()
+            Database.close()
 
         # CONNECTIONS
         self.UndoButton.clicked.connect(self.GoBack)
@@ -217,19 +216,6 @@ class Object(QWidget):
 
         # OTHER CONNECTIONS
         self.TabArea.currentChanged.connect(self.ChangeTab)
-
-    def UpdateProfileSettings(self):
-        with sql.connect(os.path.join(self.WebProfilePath, 'Data.db')) as Database:
-            Cursor = Database.cursor()
-            Request = "SELECT value FROM safetySettings WHERE id = 2"  # temp ID = 2
-            Response = bool(Cursor.execute(Request).fetchone()[0])  # temp FETCHONE
-        Database.close()
-        self.WebProfile.setCachePath(os.path.join(self.WebProfilePath, 'Cache'))
-        if Response:  # TEMP RESPONSE ONLY
-            self.WebProfile.setPersistentStoragePath(os.path.join(self.WebProfilePath, 'Persistent'))
-            self.WebProfile.setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.ForcePersistentCookies)
-        else:
-            self.WebProfile.setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.NoPersistentCookies)
 
     def eventFilter(self, watched, event):
         if watched is self.SearchEdit and event.type() == QEvent.Type.FocusIn and not self.SearchEdited:
@@ -268,7 +254,7 @@ class Object(QWidget):
         self.CurrentWebViewIndex = Index
         self.IsCreatingHoldOn = False
         self.ExecReq(IsSelf=True)
-        if JustOpened:
+        if JustOpened and self.WebProfileId != -1:
             with sql.connect(self.UserDatabase) as Database:
                 Cursor = Database.cursor()
                 Request = "SELECT value FROM userSettings WHERE name = ?"
@@ -379,6 +365,7 @@ class Object(QWidget):
             self.SearchEdited = False
             self.WebViewRegister[self.CurrentWebViewIndex].stop()
             self.ReloadButton.setText('↺')
+
 
     def _HandleFullScreen(self, Request):
         if Request.toggleOn():

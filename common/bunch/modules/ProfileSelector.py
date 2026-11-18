@@ -9,7 +9,7 @@ from . import LocalProfileCreator
 import argon2
 
 _WIDGET = None
-_LocalUsersDatabase = Path(__file__).resolve().parent.parent.parent / 'data/LocalUsers-Safe.sqlite'  # Temp -Safe file
+_LocalUsersDatabase = Path(__file__).resolve().parent.parent.parent / 'data/LocalUsers.db'
 
 
 class Object(QWidget):
@@ -156,6 +156,8 @@ class Object(QWidget):
 
                 if IsMatch and not Closed:
                     self.AppManager.StartBrowser(self, Id)
+            else:
+                self.AppManager.StartBrowser(self, Id)
         Database.close()
     
     def CreateNewLocalUser(self):

@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QToolButton, QLabel, QSizePolicy, QLineEdit, QComboBox, QFrame, QCheckBox, QMessageBox, QSizePolicy
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QToolButton, QLabel, QSizePolicy, QLineEdit, QComboBox, QFrame, QCheckBox, QMessageBox, QSizePolicy, QApplication
 from PySide6.QtGui import QPixmap
-from PySide6.QtCore import Qt, QUrl
+from PySide6.QtCore import Qt, QUrl, QCoreApplication, QEvent
 from pathlib import Path
 import sqlite3 as sql
 import os
@@ -8,13 +8,14 @@ from . import ProfileMini
 import shutil
 
 _WIDGET = None
-_LocalUsersDatabase = Path(__file__).resolve().parent.parent.parent / 'data/LocalUsers-Safe.sqlite'  # Temp -Safe file
+_LocalUsersDatabase = Path(__file__).resolve().parent.parent.parent / 'data/LocalUsers.db'
 
 
 class Object(QWidget):
-    def __init__(self, WebProfileId: int):
+    def __init__(self, WebProfileId: int, AppManager):
         super().__init__()
         self.CurrentWebProfileId = WebProfileId
+        self.AppManager = AppManager
 
         self.UnifiedStyleSheet = "font-family: 'Inter'; color: #0a0a0a;"
         self.ProgressStyleSheet = """QProgressBar {
@@ -109,86 +110,6 @@ class Object(QWidget):
         self.SearchEngineBox.addItem('Bing')
         Setting.layout().addWidget(self.SearchEngineBox)
 
-        Line = QFrame()
-        Line.setFrameShape(QFrame.Shape.HLine)
-        Line.setFrameShadow(QFrame.Shadow.Sunken)
-        Line.setStyleSheet("background-color: #efefef;")
-        self.layout().addWidget(Line)
-
-        Title_2 = QLabel()
-        Title_2.setText('• Safety')
-        Title_2.setStyleSheet(self.UnifiedStyleSheet + ' font-size: 16px; font-weight: bold;')
-        Title_2.setWordWrap(True)
-        self.layout().addWidget(Title_2)
-
-        Setting = QWidget()
-        Setting.setLayout(QHBoxLayout())
-        Setting.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().addWidget(Setting)
-        SetTitle = QLabel()
-        SetTitle.setText('HTTPS-sites only')
-        SetTitle.setStyleSheet(self.UnifiedStyleSheet + ' font-size: 12px;')
-        SetTitle.setWordWrap(True)
-        Setting.layout().addWidget(SetTitle)
-        Setting.layout().addStretch()
-        self.HttpsOnlyCheck = QCheckBox()
-        Setting.layout().addWidget(self.HttpsOnlyCheck)
-
-        Setting = QWidget()
-        Setting.setLayout(QHBoxLayout())
-        Setting.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().addWidget(Setting)
-        SetTitle = QLabel()
-        SetTitle.setText('Necessary Cookies only')
-        SetTitle.setStyleSheet(self.UnifiedStyleSheet + ' font-size: 12px;')
-        SetTitle.setWordWrap(True)
-        Setting.layout().addWidget(SetTitle)
-        Setting.layout().addStretch()
-        self.NecessaryCookiesCheck = QCheckBox()
-        Setting.layout().addWidget(self.NecessaryCookiesCheck)
-
-        Setting = QWidget()
-        Setting.setLayout(QHBoxLayout())
-        Setting.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().addWidget(Setting)
-        SetTitle = QLabel()
-        SetTitle.setText('Block external requests')
-        SetTitle.setStyleSheet(self.UnifiedStyleSheet + ' font-size: 12px;')
-        SetTitle.setWordWrap(True)
-        Setting.layout().addWidget(SetTitle)
-        Setting.layout().addStretch()
-        self.BlockExternalRequestsCheck = QCheckBox()
-        Setting.layout().addWidget(self.BlockExternalRequestsCheck)
-
-        Setting = QWidget()
-        Setting.setLayout(QHBoxLayout())
-        Setting.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().addWidget(Setting)
-        SetTitle = QLabel()
-        SetTitle.setText('Request policy')
-        SetTitle.setStyleSheet(self.UnifiedStyleSheet + ' font-size: 12px;')
-        SetTitle.setWordWrap(True)
-        Setting.layout().addWidget(SetTitle)
-        Setting.layout().addStretch()
-        self.RequestPolicy = QComboBox()
-        self.RequestPolicy.addItem('Soft')
-        self.RequestPolicy.addItem('Strict')
-        self.RequestPolicy.addItem('None')
-        Setting.layout().addWidget(self.RequestPolicy)
-
-        Setting = QWidget()
-        Setting.setLayout(QHBoxLayout())
-        Setting.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().addWidget(Setting)
-        self.DeleteProfileButton = QToolButton()
-        self.DeleteProfileButton.setText('Delete local profile')
-        self.DeleteProfileButton.setStyleSheet(self.UnifiedStyleSheet + ' font-size: 12px; background-color: #f40000; border-color: #d90000; color: #f4f4f4;')
-        self.DeleteProfileButton.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-        self.DeleteProfileButton.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.DeleteProfileButton.clicked.connect(self.DeleteProfile)
-        Setting.layout().addWidget(self.DeleteProfileButton)
-
-        self.layout().addStretch()
 
         BottomLine = QFrame()
         BottomLine.setFrameShape(QFrame.Shape.HLine)
@@ -229,10 +150,6 @@ class Object(QWidget):
 
         self.HomepageEdit.textEdited.connect(self.SetSomethingChanged)
         self.SearchEngineBox.currentIndexChanged.connect(self.SetSomethingChanged)
-        self.HttpsOnlyCheck.toggled.connect(self.SetSomethingChanged)
-        self.NecessaryCookiesCheck.toggled.connect(self.SetSomethingChanged)
-        self.BlockExternalRequestsCheck.toggled.connect(self.SetSomethingChanged)
-        self.RequestPolicy.currentIndexChanged.connect(self.SetSomethingChanged)
 
     def SetSomethingChanged(self):
         self.CommitButton.setStyleSheet('background-color: #00d900; font-family: "Inter"; color: #f4f4f4;')
@@ -255,17 +172,9 @@ class Object(QWidget):
             Cursor = Database.cursor()
             Request = "SELECT value FROM userSettings"  # Homepage, SearchEngineByDefault, CacheFolder, PersistentFolder
             UserSettings = Cursor.execute(Request).fetchall()
-
-            Request = "SELECT value FROM safetySettings"  # HttpsOnly, NecessaryCookiesOnly, CertificatePolicy, BlockExternalRequests
-            SafetySettings = Cursor.execute(Request).fetchall()
         Database.close()
         self.HomepageEdit.setText(UserSettings[0][0])
         self.SearchEngineBox.setCurrentIndex(int(UserSettings[1][0]) - 1)
-            
-        self.HttpsOnlyCheck.setChecked(bool(SafetySettings[0][0]))
-        self.NecessaryCookiesCheck.setChecked(bool(SafetySettings[1][0]))
-        self.RequestPolicy.setCurrentIndex(int(SafetySettings[2][0]) - 1)
-        self.BlockExternalRequestsCheck.setChecked(bool(SafetySettings[3][0]))
 
     def UpdateSettings(self):
         with sql.connect(_LocalUsersDatabase) as Database:
@@ -298,45 +207,24 @@ class Object(QWidget):
     def Close(self, IsCrossClicked=False):
         if not IsCrossClicked:
             self.close()
-        else:
+        else:      
             if self.HasChanges:
                 Decision = QMessageBox.warning(self, 'Hey!', 'You have unsaved settings! Would you really like to close this window without saving?',
                     QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
                 if Decision == QMessageBox.StandardButton.Yes:
-                    ProfileMini.ShowObject(self.CurrentWebProfileId)
+                    ProfileMini.ShowObject(self.CurrentWebProfileId, self.AppManager)
                     return True
                 else:
                     return False
             else:
-                ProfileMini.ShowObject(self.CurrentWebProfileId)
+                ProfileMini.ShowObject(self.CurrentWebProfileId, self.AppManager)
                 return True
-
-    def DeleteProfile(self):
-        Ok = QMessageBox.warning(self, 'Hey!', 'You are going to delete the local profile! That means you won\'t be available to your services without rejoining.\nAre you sure you want to delete your profile?',
-            QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No)
-        if Ok == QMessageBox.StandardButton.Yes:
-            with sql.connect(_LocalUsersDatabase) as Database:
-                Cursor = Database.cursor()
-                Request = "SELECT userFolder FROM localUsers WHERE id = ?"
-                Folder = Cursor.execute(Request, (self.CurrentWebProfileId,)).fetchone()[0]
-
-            try:
-                for Root, _, Files in os.walk(Folder):
-                    for File in Files:
-                        os.remove(os.path.join(Root, File))
-                os.rmdir(Folder)
-            except Exception:
-                QMessageBox.critical(self, 'Oh!', 'Unable to delete the profile', QMessageBox.StandardButton.Ok)
-            else:
-                Request = "DELETE FROM localUsers WHERE id = ?"
-                Cursor.execute(Request, (self.CurrentWebProfileId,))
-            Database.close()
-            print('Deleted local profile')
+            
 
 
-def ShowObject(WebProfileId: int):
+def ShowObject(WebProfileId: int, AppManager):
     global _WIDGET
 
-    _WIDGET = Object(WebProfileId)
+    _WIDGET = Object(WebProfileId, AppManager)
     _WIDGET.show()
 
