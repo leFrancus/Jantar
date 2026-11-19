@@ -11,6 +11,13 @@ echo Uninstallation has been canceled.
 goto :End
 
 :Delete
+echo Need to delete libraries that used in program? WARNING: may break other programs! Y/n
+if /i "%Confirm%"=="y" goto :UninstLibs
+if /i "%Confirm%"=="Y" goto :UninstLibs
+
+:UninstLibs
+pip uninstall -r requirements.txt
+
 rmdir /s /q %appdata%\Jantar
 rmdir /s /q ..
 

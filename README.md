@@ -20,10 +20,12 @@
 ### Install
 1. Download any release of Jantar
 2. Unpack the downloaded archive.
-3. Now, you can use the browser! Just click "Jantar.cmd"! 🎉
+3. Click "python.mcix" to install compatible Python version.
+4. Click "Install.cmd" to install dependencies.
+5. Now, you can use the browser! Just click "Jantar.cmd"! 🎉
 
 ### Uninstall
-1. Click "uninstall.cmd" in the program directory.
+1. Click "Uninstall.cmd" in the program directory.
 
 ## That's it!
 [![User](https://img.shields.io/badge/Author-leFrancus-blue?logo=github)](https://github.com/leFrancus)

@@ -4,14 +4,14 @@ import time
 import sys
 import os
 
-_MainPath = Path(__file__).resolve()
+_MainPath = Path(__file__)
 _SearchEnginesDatabase = str(_MainPath.parent / 'data/SearchEngines.sqlite')
 
 
 class JManager:
     def __init__(self):
         try:
-            self.PATH = Path(__file__).resolve().parent
+            self.PATH = Path(__file__).parent
         except Exception:
             print('Unable to load: error during PATH integration')
 
