@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Os support](https://img.shields.io/badge/Windows_support-Windows_11_(x64)-blue)
 ![Status](https://img.shields.io/badge/Status-Development's_stopped-gray)
-![Last release](https://img.shields.io/badge/Last_release-Pre–Release_26.0_(Night)-black)
+![Last release](https://img.shields.io/badge/Last_release-Release_26.0_(Night)-black)
 
 
 
