@@ -190,11 +190,6 @@ class Object(QWidget):
 
             Cursor.execute("UPDATE userSettings SET value = ? WHERE name = ?", (QUrl(self.HomepageEdit.text()).toString(), "Homepage"))
             Cursor.execute("UPDATE userSettings SET value = ? WHERE name = ?", (str(self.SearchEngineBox.currentIndex() + 1), "SearchEngineByDefault"))
-
-            Cursor.execute("UPDATE safetySettings SET value = ? WHERE name = ?", (str(int(self.HttpsOnlyCheck.isChecked())), "HttpsOnly"))
-            Cursor.execute("UPDATE safetySettings SET value = ? WHERE name = ?", (str(int(self.NecessaryCookiesCheck.isChecked())), "NecessaryCookiesOnly"))
-            Cursor.execute("UPDATE safetySettings SET value = ? WHERE name = ?", (str(self.RequestPolicy.currentIndex() + 1), "CertificatePolicy"))
-            Cursor.execute("UPDATE safetySettings SET value = ? WHERE name = ?", (str(int(self.BlockExternalRequestsCheck.isChecked())), "BlockExternalRequests"))
         Database.close()
 
     def closeEvent(self, event):
