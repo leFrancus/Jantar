@@ -32,3 +32,5 @@
 
 # WARNING
 This is the **educational project**, not a complete browser! Download and use it only *if you sure!*
+# NOTICE
+This project may be continued as a remake. This is not a full stop.
